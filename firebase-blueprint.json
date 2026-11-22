@@ -1,0 +1,402 @@
+{
+  "entities": {
+    "MemoryProfile": {
+      "title": "MemoryProfile",
+      "description": "Hazard's structured memory sheet for Raphaël and Wyatt.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "rawText": { "type": "string" },
+        "firstName": { "type": "string" },
+        "musicStyle": { "type": "string" },
+        "favoriteArtists": { "type": "string" },
+        "wyattLikes": { "type": "string" },
+        "wyattWantsToLearn": { "type": "string" },
+        "wyattMemories": { "type": "string" },
+        "shortTermGoals": { "type": "string" },
+        "longTermGoals": { "type": "string" },
+        "decisionsMade": { "type": "string" },
+        "inProgress": { "type": "string" },
+        "tradingLevel": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId", "rawText", "firstName", "musicStyle", "favoriteArtists",
+        "wyattLikes", "wyattWantsToLearn", "wyattMemories",
+        "shortTermGoals", "longTermGoals", "decisionsMade", "inProgress",
+        "tradingLevel", "createdAt", "updatedAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A message in the conversation between Hazard and Raphaël or Wyatt.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "hazard"] },
+        "speakerMode": { "type": "string", "enum": ["raphael", "wyatt", "unknown"] },
+        "topic": { "type": "string" },
+        "text": { "type": "string" },
+        "requiresConfirmation": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "role", "speakerMode", "topic", "text", "requiresConfirmation", "createdAt", "updatedAt"]
+    },
+    "CreationItem": {
+      "title": "CreationItem",
+      "description": "Saved creative, promo, admin, project, trading setup, financial plan, or Wyatt adventure item.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "category": { "type": "string", "enum": ["music", "promo", "admin", "projects", "trading", "wyatt"] },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "tags": { "type": "array" },
+        "pinned": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "category", "title", "content", "tags", "pinned", "createdAt", "updatedAt"]
+    },
+    "WatchlistAsset": {
+      "title": "WatchlistAsset",
+      "description": "Favorite asset tracked in read-only live market view.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "symbol": { "type": "string" },
+        "name": { "type": "string" },
+        "assetType": { "type": "string", "enum": ["crypto", "gold", "stock"] },
+        "apiId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "symbol", "name", "assetType", "apiId", "createdAt", "updatedAt"]
+    },
+    "PriceAlert": {
+      "title": "PriceAlert",
+      "description": "User-configured price threshold alert.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "symbol": { "type": "string" },
+        "assetName": { "type": "string" },
+        "apiId": { "type": "string" },
+        "assetType": { "type": "string", "enum": ["crypto", "gold", "stock"] },
+        "targetPrice": { "type": "number" },
+        "above": { "type": "boolean" },
+        "triggered": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "symbol", "assetName", "apiId", "assetType", "targetPrice", "above", "triggered", "createdAt", "updatedAt"]
+    },
+    "SimWallet": {
+      "title": "SimWallet",
+      "description": "Simulated paper-trading virtual cash balance.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "cashEur": { "type": "number" },
+        "initialEur": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "cashEur", "initialEur", "createdAt", "updatedAt"]
+    },
+    "SimPosition": {
+      "title": "SimPosition",
+      "description": "Simulated virtual holding for an asset.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "symbol": { "type": "string" },
+        "assetName": { "type": "string" },
+        "assetType": { "type": "string", "enum": ["crypto", "gold", "stock"] },
+        "quantity": { "type": "number" },
+        "avgBuyPrice": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "symbol", "assetName", "assetType", "quantity", "avgBuyPrice", "createdAt", "updatedAt"]
+    },
+    "SimTrade": {
+      "title": "SimTrade",
+      "description": "Simulated buy or sell execution log.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "symbol": { "type": "string" },
+        "assetName": { "type": "string" },
+        "side": { "type": "string", "enum": ["buy", "sell"] },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" },
+        "totalEur": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "symbol", "assetName", "side", "quantity", "price", "totalEur", "createdAt", "updatedAt"]
+    },
+    "JournalEntry": {
+      "title": "JournalEntry",
+      "description": "Trading journal entry with decision rationale and Hazard analysis.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "asset": { "type": "string" },
+        "direction": { "type": "string", "enum": ["long", "short", "spot"] },
+        "entryPrice": { "type": "string" },
+        "exitPrice": { "type": "string" },
+        "stopLoss": { "type": "string" },
+        "reason": { "type": "string" },
+        "emotion": { "type": "string" },
+        "outcome": { "type": "string" },
+        "aiFeedback": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "asset", "direction", "entryPrice", "exitPrice", "stopLoss", "reason", "emotion", "outcome", "aiFeedback", "createdAt", "updatedAt"]
+    },
+    "BudgetEntry": {
+      "title": "BudgetEntry",
+      "description": "Monthly income or expense entry.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "kind": { "type": "string", "enum": ["income", "expense"] },
+        "category": { "type": "string" },
+        "label": { "type": "string" },
+        "amountEur": { "type": "number" },
+        "monthKey": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "kind", "category", "label", "amountEur", "monthKey", "createdAt", "updatedAt"]
+    },
+    "SavingsGoal": {
+      "title": "SavingsGoal",
+      "description": "Savings goal progress.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "targetEur": { "type": "number" },
+        "savedEur": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "targetEur", "savedEur", "createdAt", "updatedAt"]
+    },
+    "MusicRevenue": {
+      "title": "MusicRevenue",
+      "description": "Music earnings tracker (streams, TikTok, sales).",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "trackTitle": { "type": "string" },
+        "source": { "type": "string", "enum": ["streams", "tiktok", "sales"] },
+        "playsCount": { "type": "number" },
+        "amountEur": { "type": "number" },
+        "periodLabel": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "trackTitle", "source", "playsCount", "amountEur", "periodLabel", "createdAt", "updatedAt"]
+    },
+    "SaasProject": {
+      "title": "SaasProject",
+      "description": "App/SaaS idea with market analysis, business plan, roadmap, and next action.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "problem": { "type": "string" },
+        "audience": { "type": "string" },
+        "competition": { "type": "string" },
+        "pricing": { "type": "string" },
+        "businessPlan": { "type": "string" },
+        "roadmap": { "type": "string" },
+        "nextAction": { "type": "string" },
+        "status": { "type": "string", "enum": ["idea", "building", "launched"] },
+        "actionDone": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId", "title", "problem", "audience", "competition", "pricing",
+        "businessPlan", "roadmap", "nextAction", "status", "actionDone",
+        "createdAt", "updatedAt"
+      ]
+    },
+    "BotStrategy": {
+      "title": "BotStrategy",
+      "description": "Automated trading bot strategy rules and simulation/real execution stats.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "assetSymbol": { "type": "string" },
+        "apiId": { "type": "string" },
+        "buyDropPct": { "type": "number" },
+        "takeProfitPct": { "type": "number" },
+        "stopLossPct": { "type": "number" },
+        "amountPerTradeEur": { "type": "number" },
+        "maxTotalLossEur": { "type": "number" },
+        "maxTradesCount": { "type": "number" },
+        "mode": { "type": "string", "enum": ["simulation", "real"] },
+        "status": { "type": "string", "enum": ["idle", "running", "stopped"] },
+        "tradesExecuted": { "type": "number" },
+        "winsCount": { "type": "number" },
+        "lossesCount": { "type": "number" },
+        "cumulativePnlEur": { "type": "number" },
+        "referencePrice": { "type": "number" },
+        "lastActionNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId", "name", "description", "assetSymbol", "apiId",
+        "buyDropPct", "takeProfitPct", "stopLossPct",
+        "amountPerTradeEur", "maxTotalLossEur", "maxTradesCount",
+        "mode", "status", "tradesExecuted", "winsCount", "lossesCount",
+        "cumulativePnlEur", "referencePrice", "lastActionNote",
+        "createdAt", "updatedAt"
+      ]
+    },
+    "OwnerAccessPolicy": {
+      "title": "OwnerAccessPolicy",
+      "description": "Allowlist restricting app access strictly to the owner Google account and optionally Wyatt's authorized Google email.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string" },
+        "ownerEmail": { "type": "string" },
+        "wyattEmail": { "type": "string" },
+        "allowedEmails": { "type": "array" },
+        "lastLoginEmail": { "type": "string" },
+        "lastLoginDevice": { "type": "string" },
+        "lastLoginAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid", "ownerEmail", "wyattEmail", "allowedEmails",
+        "lastLoginEmail", "lastLoginDevice", "lastLoginAt", "createdAt", "updatedAt"
+      ]
+    },
+    "SecurityEvent": {
+      "title": "SecurityEvent",
+      "description": "Per-user security audit log: logins, blocked prompt injections, rate limit hits, and anomalies.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "eventType": { "type": "string", "enum": ["login", "anomaly", "protection"] },
+        "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+        "title": { "type": "string" },
+        "detail": { "type": "string" },
+        "deviceLabel": { "type": "string" },
+        "resolved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "eventType", "severity", "title", "detail", "deviceLabel", "resolved", "createdAt", "updatedAt"]
+    },
+    "ImprovementProposal": {
+      "title": "ImprovementProposal",
+      "description": "Continuous improvement proposal awaiting explicit user approval (Apply / Refuse / Later).",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["bug", "perf", "security", "simplify", "feature", "ecosystem"] },
+        "priority": { "type": "string", "enum": ["haute", "moyenne"] },
+        "whatToChange": { "type": "string" },
+        "why": { "type": "string" },
+        "impact": { "type": "string" },
+        "risks": { "type": "string" },
+        "rollbackHowTo": { "type": "string" },
+        "preparedPlan": { "type": "string" },
+        "weekKey": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "applied", "refused", "postponed", "rolled_back"] },
+        "appliedVersionId": { "type": "string" },
+        "beforePreview": { "type": "string" },
+        "afterPreview": { "type": "string" },
+        "supports24hTrial": { "type": "boolean" },
+        "trialAccentStyle": { "type": "string" },
+        "trialThemeMode": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId", "title", "category", "priority", "whatToChange", "why",
+        "impact", "risks", "rollbackHowTo", "preparedPlan", "weekKey",
+        "status", "appliedVersionId", "beforePreview", "afterPreview",
+        "supports24hTrial", "trialAccentStyle", "trialThemeMode",
+        "createdAt", "updatedAt"
+      ]
+    },
+    "AppVersionSnapshot": {
+      "title": "AppVersionSnapshot",
+      "description": "Saved configuration/improvement version snapshot enabling 1-click rollback.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "versionTag": { "type": "string" },
+        "summary": { "type": "string" },
+        "appliedProposalIds": { "type": "array" },
+        "activeNotes": { "type": "string" },
+        "current": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "versionTag", "summary", "appliedProposalIds", "activeNotes", "current", "createdAt", "updatedAt"]
+    },
+    "UiPreferences": {
+      "title": "UiPreferences",
+      "description": "Mobile UI customization preferences: theme, accent color, text scale, module order, hidden modules, gadgets, and 24h trial state.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "themeMode": { "type": "string", "enum": ["dark", "light"] },
+        "accentStyle": { "type": "string", "enum": ["hazard", "emerald", "amber", "violet", "ocean"] },
+        "textScale": { "type": "number" },
+        "moduleOrder": { "type": "array" },
+        "hiddenModules": { "type": "array" },
+        "enabledGadgets": { "type": "array" },
+        "trialLabel": { "type": "string" },
+        "trialExpiresAtMs": { "type": "number" },
+        "previousThemeSnapshot": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId", "themeMode", "accentStyle", "textScale", "moduleOrder",
+        "hiddenModules", "enabledGadgets", "trialLabel", "trialExpiresAtMs",
+        "previousThemeSnapshot", "createdAt", "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/security_settings/{docId}": { "schema": { "$ref": "#/entities/OwnerAccessPolicy" }, "description": "Owner & Wyatt Google account allowlist policy." },
+    "/users/{userId}/memories/{memoryId}": { "schema": { "$ref": "#/entities/MemoryProfile" }, "description": "Memory sheet." },
+    "/users/{userId}/messages/{messageId}": { "schema": { "$ref": "#/entities/ChatMessage" }, "description": "Chat messages." },
+    "/users/{userId}/creations/{creationId}": { "schema": { "$ref": "#/entities/CreationItem" }, "description": "Saved creations." },
+    "/users/{userId}/watchlist/{assetId}": { "schema": { "$ref": "#/entities/WatchlistAsset" }, "description": "Favorite assets." },
+    "/users/{userId}/price_alerts/{alertId}": { "schema": { "$ref": "#/entities/PriceAlert" }, "description": "Price alerts." },
+    "/users/{userId}/sim_wallet/{walletId}": { "schema": { "$ref": "#/entities/SimWallet" }, "description": "Simulated wallet." },
+    "/users/{userId}/sim_positions/{positionId}": { "schema": { "$ref": "#/entities/SimPosition" }, "description": "Simulated positions." },
+    "/users/{userId}/sim_trades/{tradeId}": { "schema": { "$ref": "#/entities/SimTrade" }, "description": "Simulated trade history." },
+    "/users/{userId}/journal_entries/{entryId}": { "schema": { "$ref": "#/entities/JournalEntry" }, "description": "Trading journal." },
+    "/users/{userId}/budget_entries/{entryId}": { "schema": { "$ref": "#/entities/BudgetEntry" }, "description": "Monthly budget entries." },
+    "/users/{userId}/savings_goals/{goalId}": { "schema": { "$ref": "#/entities/SavingsGoal" }, "description": "Savings goals." },
+    "/users/{userId}/music_revenues/{revId}": { "schema": { "$ref": "#/entities/MusicRevenue" }, "description": "Music revenue tracker." },
+    "/users/{userId}/saas_projects/{projectId}": { "schema": { "$ref": "#/entities/SaasProject" }, "description": "SaaS/App projects & roadmaps." },
+    "/users/{userId}/bot_strategies/{strategyId}": { "schema": { "$ref": "#/entities/BotStrategy" }, "description": "Automated trading strategies." },
+    "/users/{userId}/security_events/{eventId}": { "schema": { "$ref": "#/entities/SecurityEvent" }, "description": "Security audit & anomaly log." },
+    "/users/{userId}/improvement_proposals/{proposalId}": { "schema": { "$ref": "#/entities/ImprovementProposal" }, "description": "Continuous improvement proposals." },
+    "/users/{userId}/app_versions/{versionId}": { "schema": { "$ref": "#/entities/AppVersionSnapshot" }, "description": "Version snapshots for 1-click rollback." },
+    "/users/{userId}/ui_prefs/{prefId}": { "schema": { "$ref": "#/entities/UiPreferences" }, "description": "Personalization & layout preferences." }
+  }
+}
