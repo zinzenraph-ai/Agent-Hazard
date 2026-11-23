@@ -35,32 +35,73 @@ jobs:
             echo "Secret ENV_FILE absent : .env copié depuis .env.example"
           fi
 
-          touch .env
+      - name: Préparer les clés API pour BuildConfig
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
 
-          set_if_blank() {
-            KEY="$1"
-            FALLBACK="$2"
+          keys = [
+              "ALPHAVANTAGE_API_KEY",
+              "GNEWS_API_KEY",
+              "OPENROUTER_API_KEY",
+              "TWELVEDATA_API_KEY",
+              "GEMINI_API_KEY",
+              "COINGECKO_API_KEY",
+              "EXCHANGE_API_KEY",
+              "EXCHANGE_API_SECRET",
+              "FIREBASE_APPCHECK_DEBUG_TOKEN",
+          ]
 
-            if grep -q "^${KEY}=" .env; then
-              VALUE="$(grep "^${KEY}=" .env | head -n1 | cut -d= -f2-)"
-              if [ -z "$VALUE" ]; then
-                sed -i "s|^${KEY}=.*|${KEY}=${FALLBACK}|" .env
-              fi
-            else
-              echo "${KEY}=${FALLBACK}" >> .env
-            fi
-          }
+          env = {}
+          p = Path(".env")
 
-          set_if_blank "ALPHAVANTAGE_API_KEY" "\"\""
-          set_if_blank "GNEWS_API_KEY" "\"\""
-          set_if_blank "OPENROUTER_API_KEY" "\"\""
-          set_if_blank "TWELVEDATA_API_KEY" "\"\""
-          set_if_blank "COINGECKO_API_KEY" "\"\""
-          set_if_blank "EXCHANGE_API_KEY" "\"\""
-          set_if_blank "EXCHANGE_API_SECRET" "\"\""
-          set_if_blank "FIREBASE_APPCHECK_DEBUG_TOKEN" "\"\""
+          if p.exists():
+              for line in p.read_text(encoding="utf-8").splitlines():
+                  line = line.strip().rstrip("\r")
+                  if not line or line.startswith("#") or "=" not in line:
+                      continue
+                  k, v = line.split("=", 1)
+                  env[k.strip()] = v.strip()
 
-          echo "Variables .env préparées pour BuildConfig"
+          def java_string_literal(value: str) -> str:
+              value = (value or "").strip()
+              if value == "" or value in ("''", '""'):
+                  return '""'
+              if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+                  return value
+              value = value.replace("\\", "\\\\").replace('"', '\\"')
+              return f'"{value}"'
+
+          # Ajoute des valeurs Gradle valides pour buildConfigField()
+          with open("gradle.properties", "a", encoding="utf-8") as g:
+              g.write("\n# Added by GitHub Actions for BuildConfig\n")
+              for k in keys:
+                  g.write(f"{k}={java_string_literal(env.get(k, ''))}\n")
+
+          # Corrige aussi .env pour éviter les clés complètement vides
+          existing = set()
+          lines = []
+
+          if p.exists():
+              for raw in p.read_text(encoding="utf-8").splitlines():
+                  line = raw.rstrip("\r")
+                  if "=" in line and not line.lstrip().startswith("#"):
+                      k, v = line.split("=", 1)
+                      k = k.strip()
+                      if k in keys:
+                          existing.add(k)
+                          if v.strip() == "":
+                              line = f'{k}=""'
+                  lines.append(line)
+
+          for k in keys:
+              if k not in existing:
+                  lines.append(f'{k}=""')
+
+          p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+          print("Clés BuildConfig préparées correctement")
+          PY
 
       - name: Créer le debug.keystore
         run: |
