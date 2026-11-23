@@ -1,4 +1,5 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import java.util.Properties
 
 plugins {
   alias(libs.plugins.android.application)
@@ -6,6 +7,43 @@ plugins {
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.secrets)
   alias(libs.plugins.google.services)
+}
+
+val buildConfigSecretKeys = listOf(
+  "ALPHAVANTAGE_API_KEY",
+  "GEMINI_API_KEY",
+  "GNEWS_API_KEY",
+  "GROQ_API_KEY",
+  "OPENROUTER_API_KEY",
+  "TWELVEDATA_API_KEY",
+  "COINGECKO_API_KEY",
+  "EXCHANGE_API_KEY",
+  "EXCHANGE_API_SECRET",
+)
+
+val secretProperties = Properties().apply {
+  listOf(rootProject.file(".env.example"), rootProject.file(".env"))
+    .filter { it.isFile }
+    .forEach { propertiesFile ->
+      propertiesFile.inputStream().use { load(it) }
+    }
+}
+
+fun quoteBuildConfigString(value: String): String = buildString {
+  append('"')
+  value.forEach { character ->
+    when (character) {
+      '\\' -> append("\\\\")
+      '"' -> append("\\\"")
+      '\n' -> append("\\n")
+      '\r' -> append("\\r")
+      '\t' -> append("\\t")
+      '\b' -> append("\\b")
+      '\u000C' -> append("\\f")
+      else -> append(character)
+    }
+  }
+  append('"')
 }
 
 android {
@@ -20,6 +58,15 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    buildConfigSecretKeys.forEach { key ->
+      val value = secretProperties.getProperty(key)
+        ?.trim()
+        ?.removeSurrounding("\"")
+        ?.removeSurrounding("'")
+        .orEmpty()
+      buildConfigField("String", key, quoteBuildConfigString(value))
+    }
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,
@@ -75,6 +122,7 @@ android {
 secrets {
   propertiesFileName = ".env"
   defaultPropertiesFileName = ".env.example"
+  ignoreList.addAll(buildConfigSecretKeys)
   ignoreList.add("FIREBASE_APPCHECK_DEBUG_TOKEN")
 }
 
