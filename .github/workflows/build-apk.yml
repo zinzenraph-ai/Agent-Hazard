@@ -22,6 +22,18 @@ jobs:
       - name: Configurer Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Créer le fichier .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          if [ -n "$ENV_FILE" ]; then
+            printf '%s\n' "$ENV_FILE" > .env
+            echo "Fichier .env créé depuis le secret"
+          else
+            cp .env.example .env
+            echo "Secret ENV_FILE absent : .env copié depuis .env.example (clés vides)"
+          fi
+
       - name: Rendre gradlew exécutable
         run: chmod +x gradlew
 
