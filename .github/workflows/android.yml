@@ -26,6 +26,9 @@ jobs:
 
       - name: Configurer le SDK Android
         uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools"
+          
 
       - name: Configurer Gradle
         uses: gradle/actions/setup-gradle@v4
