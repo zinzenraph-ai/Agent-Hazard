@@ -31,7 +31,7 @@ jobs:
             echo "Fichier .env créé depuis le secret"
           else
             cp .env.example .env
-            echo "Secret ENV_FILE absent : .env copié depuis .env.example (clés vides)"
+            echo "Secret ENV_FILE absent : clés vides"
           fi
 
       - name: Rendre gradlew exécutable
