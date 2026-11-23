@@ -35,6 +35,33 @@ jobs:
             echo "Secret ENV_FILE absent : .env copié depuis .env.example"
           fi
 
+          touch .env
+
+          set_if_blank() {
+            KEY="$1"
+            FALLBACK="$2"
+
+            if grep -q "^${KEY}=" .env; then
+              VALUE="$(grep "^${KEY}=" .env | head -n1 | cut -d= -f2-)"
+              if [ -z "$VALUE" ]; then
+                sed -i "s|^${KEY}=.*|${KEY}=${FALLBACK}|" .env
+              fi
+            else
+              echo "${KEY}=${FALLBACK}" >> .env
+            fi
+          }
+
+          set_if_blank "ALPHAVANTAGE_API_KEY" "\"\""
+          set_if_blank "GNEWS_API_KEY" "\"\""
+          set_if_blank "OPENROUTER_API_KEY" "\"\""
+          set_if_blank "TWELVEDATA_API_KEY" "\"\""
+          set_if_blank "COINGECKO_API_KEY" "\"\""
+          set_if_blank "EXCHANGE_API_KEY" "\"\""
+          set_if_blank "EXCHANGE_API_SECRET" "\"\""
+          set_if_blank "FIREBASE_APPCHECK_DEBUG_TOKEN" "\"\""
+
+          echo "Variables .env préparées pour BuildConfig"
+
       - name: Créer le debug.keystore
         run: |
           if [ ! -f debug.keystore ]; then
